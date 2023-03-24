@@ -1,5 +1,6 @@
+
 pipeline {
-    agent any 
+    agent any
     
     stages {
         stage('clone project') { 
@@ -9,7 +10,7 @@ pipeline {
         }
         stage('Compilation') { 
             steps {
-               sh 'echo mvn package'
+               sh 'echo mvn clean install'
             }
         }
         stage('Test') { 
