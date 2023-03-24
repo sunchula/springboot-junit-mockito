@@ -8,20 +8,20 @@ pipeline {
     stages {
         stage('clone project') { 
             steps {
-               echo '*********code checkout******************'
+               echo '*******************************code checkout********************************************'
                git branch: 'main', url: 'https://github.com/sunchula/springboot-junit-mockito.git'
             }
         }
         stage('build') { 
             steps {
-               echo '*********building the code******************'
+               echo '***********************************building the code********************************************'
                sh "${mavenCMD} clean package"
             }
         }
         stage('Build Docker Image') {
 	         steps {
 	           script {
-	                echo '*********Building docker Images******************'
+	                echo '***********************************Creating Docker Images********************************************'
 				    sh 'docker build -t praveensunchula/junitapp:v1 .'
 				}
 			 }
@@ -29,7 +29,7 @@ pipeline {
 		 stage('Push Docker Image') {
 	         steps {
 	           script {
-	            echo '*********Pushing images to HUB******************'
+	            echo '***********************************Pushing Docker Images to HUB********************************************'
 	           withCredentials([string(credentialsId: 'dockerHub-pwd', variable: 'dockerhubpwd')]) {
 				
 				sh "docker login -u praveensunchula -p ${dockerhubpwd}"
@@ -48,17 +48,17 @@ pipeline {
      }  
        post{
 		    success{
-			        echo 'Thanks you.!! Pipeline successfully executed'
-			       	echo '*********Clean up jenkins workspace******************'
+			        echo '***********************************success********************************************'
+			       	echo '***********************************Clean up jenkins workspace********************************************'
 			        cleanWs()
-			        echo '*********Clean up Docker Images******************'
+			        echo '**********************************Clean up Docker Images********************************************'
 			        sh 'docker system prune -af --volumes'
 		 	}
 		    failure{
-			        echo 'failed, Please resolve the issue'
-			        echo '*********Clean up jenkins workspace******************'
+			        echo '***********************************failure********************************************'
+			        echo '***********************************Clean up jenkins workspace********************************************'
 					cleanWs()
-					echo '*********Clean up Docker Images******************'
+					echo '***********************************Clean up Docker Images********************************************'
 					sh 'docker system prune -af --volumes'
 		    }
 		}
