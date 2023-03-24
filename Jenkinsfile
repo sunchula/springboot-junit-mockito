@@ -8,25 +8,28 @@ pipeline {
     stages {
         stage('clone project') { 
             steps {
+               echo '*********code checkout******************'
                git branch: 'main', url: 'https://github.com/sunchula/springboot-junit-mockito.git'
             }
         }
         stage('build') { 
             steps {
+               echo '*********building the code******************'
                sh "${mavenCMD} clean package"
             }
         }
         stage('Build Docker Image') {
 	         steps {
 	           script {
-				    sh 'docker build -t junitapp:v1 .'
+	                echo '*********Building docker Images******************'
+				    sh 'docker build -t praveensunchula/junitapp:v1 .'
 				}
 			 }
 		 }
 		 stage('Push Docker Image') {
 	         steps {
 	           script {
-	           
+	            echo '*********Pushing images to HUB******************'
 	           withCredentials([string(credentialsId: 'dockerHub-pwd', variable: 'dockerhubpwd')]) {
 				
 				sh "docker login -u praveensunchula -p ${dockerhubpwd}"
@@ -45,12 +48,18 @@ pipeline {
      }  
        post{
 		    success{
-			        sh 'echo "Thanks you.!! Pipeline successfully executed"'
+			        echo 'Thanks you.!! Pipeline successfully executed'
+			       	echo '*********Clean up jenkins workspace******************'
 			        cleanWs()
+			        echo '*********Clean up Docker Images******************'
+			        sh 'docker system prune -af --volumes'
 		 	}
 		    failure{
-			        sh 'echo "failed, Please resolve the issue"'
+			        echo 'failed, Please resolve the issue'
+			        echo '*********Clean up jenkins workspace******************'
 					cleanWs()
+					echo '*********Clean up Docker Images******************'
+					sh 'docker system prune -af --volumes'
 		    }
 		}
 }
