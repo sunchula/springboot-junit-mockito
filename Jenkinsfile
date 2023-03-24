@@ -23,6 +23,20 @@ pipeline {
 				}
 			 }
 		 }
+		 stage('Push Docker Image') {
+	         steps {
+	           script {
+	           
+	           withCredentials([string(credentialsId: 'dockerHub-pwd', variable: 'dockerhubpwd')]) {
+				
+				sh "docker login -u praveensunchula -p ${dockerhubpwd}"
+				
+				}
+				    sh 'docker tag praveensunchula/junitapp:v1 praveensunchula/junitapp:v1'
+					sh 'docker push praveensunchula/junitapp:v1'
+				}
+			 }
+		 }
 		 stage('Test') { 
             steps {
                 echo 'Testing'
